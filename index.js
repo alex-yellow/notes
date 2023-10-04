@@ -32,8 +32,59 @@ app.get('/', function(req, res){
     const sqlSel = 'SELECT * FROM tasks';
     db.query(sqlSel, function(error, tasks, fields){
         if(error) throw error;
-        res.render('notes', {title:'Notes', tasks});
+        res.render('notes', {title:'Notes', tasks, add:req.session.add, edit:req.session.edit});
     });
+});
+
+app.get('/add', function(req, res){
+    res.render('add', {title:'Add task'});
+});
+
+app.post('/add', function(req, res){
+    const title = req.body.title;
+    const sqlAdd = 'INSERT INTO tasks (title) VALUES (?)';
+    if(title != undefined && title != null){
+        db.query(sqlAdd, [title], function(error, result, fields){
+            if(error) throw error;
+            req.session.add = `Task ${title} added success!`;
+            res.redirect('/');
+        });
+    }
+    else{
+        res.render('error', {title:'Task is null', text:'Task is null'});
+    }
+    
+});
+
+app.get('/edit/:id', function(req, res){
+    const id = req.params.id;
+    const sqlFind = 'SELECT * FROM tasks WHERE id=?';
+    db.query(sqlFind, [id], function(error, tasks, fields){
+        if(error) throw error;
+        const task = tasks[0];
+        if(task){
+            res.render('edit', {title:'Edit task', task});
+        }
+        else{
+            res.render('error', {title:'Not task', text:'Task not found'});
+        }
+    });
+});
+
+app.post('/edit/:id', function(req, res){
+    const id = req.params.id;
+    const title = req.body.title;
+    const sqlEdit = 'UPDATE tasks SET title=? WHERE id=?';
+    if(title != undefined && title != null){
+        db.query(sqlEdit, [title, id], function(error, result, fields){
+            if(error) throw error;
+            req.session.edit = `Task ${title} edit success!`;
+            res.redirect('/');
+        });
+    }
+    else{
+        res.render('error', {title:'Task is null', text:'Task is null'});
+    }
 });
 
 app.use(function(req, res){
