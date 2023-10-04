@@ -13,3 +13,5 @@ db.connect(function(error){
     }
     console.log('Connecting to the database success');
 });
+
+module.exports = db;

@@ -29,7 +29,11 @@ app.use(expsession({
 }));
 
 app.get('/', function(req, res){
-    res.render('notes');
+    const sqlSel = 'SELECT * FROM tasks';
+    db.query(sqlSel, function(error, tasks, fields){
+        if(error) throw error;
+        res.render('notes', {title:'Notes', tasks});
+    });
 });
 
 app.use(function(req, res){
