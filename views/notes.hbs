@@ -10,8 +10,13 @@
     <tbody>
         {{#each tasks}}
             <tr>
+                {{#if completed}}
+                <td style="text-decoration: line-through;">{{title}}</td>
+                <td><a href="/complete/{{id}}">Uncomplete</a></td>
+                {{else}}
                 <td>{{title}}</td>
                 <td><a href="/complete/{{id}}">Complete</a></td>
+                {{/if}}
                 <td><a href="/edit/{{id}}">Edit</a></td>
                 <td><a href="/delete/{{id}}">Delete</a></td>
             </tr>
@@ -22,5 +27,6 @@
 <div class="mess">{{add}}</div>
 <div class="mess">{{edit}}</div>
 <div class="mess">{{delete}}</div>
+<div class="mess">{{complete}}</div>
 
 <h3><a href="/add">Add Task</a></h3>

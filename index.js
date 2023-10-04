@@ -32,7 +32,7 @@ app.get('/', function(req, res){
     const sqlSel = 'SELECT * FROM tasks';
     db.query(sqlSel, function(error, tasks, fields){
         if(error) throw error;
-        res.render('notes', {title:'Notes', tasks, add:req.session.add, edit:req.session.edit, delete:req.session.delete});
+        res.render('notes', {title:'Notes', tasks, add:req.session.add, edit:req.session.edit, delete:req.session.delete, complete:req.session.complete});
     });
 });
 
@@ -98,6 +98,27 @@ app.get('/delete/:id', function(req, res){
             db.query(sqlDel, [id], function(error, result, fields){
                 if(error) throw error;
                 req.session.delete = `Task ${task.title} delete success!`;
+                res.redirect('/');
+            });
+        }
+        else{
+            res.render('error', {title:'Not task', text:'Task not found'});
+        }
+    });
+});
+
+app.get('/complete/:id', function(req, res){
+    const id = req.params.id;
+    const sqlFind = 'SELECT * FROM tasks WHERE id=?';
+    db.query(sqlFind, [id], function(error, tasks, fields){
+        if(error) throw error;
+        const task = tasks[0];
+        const newCompleted = !task.completed;
+        if(task){
+            const sqlCom = 'UPDATE tasks SET completed=? WHERE id=?';
+            db.query(sqlCom, [newCompleted, id], function(error, result, fields){
+                if(error) throw error;
+                req.session.complete = `Task ${task.title} complete updated success!`;
                 res.redirect('/');
             });
         }
